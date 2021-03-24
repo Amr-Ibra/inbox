@@ -1,38 +1,12 @@
 import React, { Component } from "react";
 import Message from "./Message";
+import messages from "../apis/messages";
 
 const selectionStatus = {
   all: null,
   some: null,
   none: null,
 };
-
-const messages = [
-  {
-    id: 1,
-    subject: "Here is some message text that has a bunch of stuff 3",
-    isRead: false,
-    isStarred: false,
-    isSelected: false,
-    labels: [],
-  },
-  {
-    id: 2,
-    subject: "Here is some message text that has a bunch of stuff 1",
-    isRead: false,
-    isStarred: false,
-    isSelected: false,
-    labels: [],
-  },
-  {
-    id: 3,
-    subject: "Here is some message text that has a bunch of stuff 2",
-    isRead: false,
-    isStarred: false,
-    isSelected: false,
-    labels: [],
-  },
-];
 
 class MessageList extends Component {
   state = {
@@ -42,7 +16,14 @@ class MessageList extends Component {
 
   render = () =>
     this.state.messages.map((message) => (
-      <Message key={message.id} subject={message.subject} />
+      <Message
+        key={message.id}
+        subject={message.subject}
+        isRead={message.isRead}
+        isStarred={message.isStarred}
+        isSelected={message.isSelected}
+        labels={message.labels}
+      />
     ));
 }
 
