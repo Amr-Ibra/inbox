@@ -20,13 +20,13 @@ code {
   border-bottom: 1px solid #efefef;
 }
 
-.message span {
+.message .subject {
   color: black;
 }
 
-.message span:hover,
-.message span:active,
-.message span:focus {
+.message .subject:hover,
+.message .subject:active,
+.message .subject:focus {
   text-decoration: none;
 }
 
@@ -71,7 +71,7 @@ code {
 
 .toolbar select,
 .toolbar button,
-.toolbar a,
+.toolbar .subject,
 .toolbar .badge {
   margin-right: 0.5em;
   margin-bottom: 0.5em;

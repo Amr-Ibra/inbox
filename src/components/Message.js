@@ -8,7 +8,7 @@ class Message extends Component {
     isRead: false,
     isStarred: false,
     isSelected: false,
-    label: label.null,
+    labels: [label.dev, label.gschool],
   };
 
   render = () => (
@@ -32,8 +32,10 @@ class Message extends Component {
         </div>
       </div>
       <div className="col-xs-11">
-        <Label label={this.state.label} />
-        <span>Here is some message text that has a bunch of stuff</span>
+        {this.state.labels.map((label, i) => (
+          <Label key={i} label={label} />
+        ))}
+        <span className="subject">{this.props.subject}</span>
       </div>
     </div>
   );
