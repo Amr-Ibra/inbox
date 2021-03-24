@@ -1,10 +1,14 @@
 import "./App.css";
+import MessageList from "./components/MessageList";
 import Toolbar from "./components/Toolbar";
 
-const App = () => (
-  <div>
-    <Toolbar />
-  </div>
-);
+function App() {
+  return (
+    <div>
+      <Toolbar />
+      <MessageList />
+    </div>
+  );
+}
 
 export default App;
