@@ -20,13 +20,13 @@ code {
   border-bottom: 1px solid #efefef;
 }
 
-.message a {
+.message span {
   color: black;
 }
 
-.message a:hover,
-.message a:active,
-.message a:focus {
+.message span:hover,
+.message span:active,
+.message span:focus {
   text-decoration: none;
 }
 
