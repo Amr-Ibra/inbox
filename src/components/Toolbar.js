@@ -1,40 +1,58 @@
-import React from "react";
+import React, { Component } from "react";
 
-const Toolbar = () => (
-  <div class="row toolbar">
-    <div class="col-md-12">
-      <p class="pull-right">
-        <span class="badge badge">2</span>
-        unread messages
-      </p>
+const selectionStatus = {
+  all: "fa-check-square-o",
+  some: "fa-minus-square-o",
+  none: "fa-square-o",
+};
 
-      <button class="btn btn-default">
-        <i class="fa fa-check-square-o"></i>
-      </button>
+class Toolbar extends Component {
+  state = {
+    unreadCount: 0,
+    selectionStatus: selectionStatus.all,
+  };
 
-      <button class="btn btn-default">Mark As Read</button>
+  handleSelectionStatus = () => {};
 
-      <button class="btn btn-default">Mark As Unread</button>
+  render = () => (
+    <div className="row toolbar">
+      <div className="col-md-12">
+        <p className="pull-right">
+          <span className="badge badge">{this.state.unreadCount}</span>
+          unread messages
+        </p>
 
-      <select class="form-control label-select">
-        <option>Apply label</option>
-        <option value="dev">dev</option>
-        <option value="personal">personal</option>
-        <option value="gschool">gschool</option>
-      </select>
+        <button
+          className="btn btn-default"
+          onClick={this.handleSelectionStatus}
+        >
+          <i className={`fa ${this.state.selectionStatus}`}></i>
+        </button>
 
-      <select class="form-control label-select">
-        <option>Remove label</option>
-        <option value="dev">dev</option>
-        <option value="personal">personal</option>
-        <option value="gschool">gschool</option>
-      </select>
+        <button className="btn btn-default">Mark As Read</button>
 
-      <button class="btn btn-default">
-        <i class="fa fa-trash-o"></i>
-      </button>
+        <button className="btn btn-default">Mark As Unread</button>
+
+        <select className="form-control label-select">
+          <option>Apply label</option>
+          <option value="dev">dev</option>
+          <option value="personal">personal</option>
+          <option value="gschool">gschool</option>
+        </select>
+
+        <select className="form-control label-select">
+          <option>Remove label</option>
+          <option value="dev">dev</option>
+          <option value="personal">personal</option>
+          <option value="gschool">gschool</option>
+        </select>
+
+        <button className="btn btn-default">
+          <i className="fa fa-trash-o"></i>
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 export default Toolbar;
