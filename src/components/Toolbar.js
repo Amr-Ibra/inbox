@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-const selectionStatus = {
+const selection = {
   all: "fa-check-square-o",
   some: "fa-minus-square-o",
   none: "fa-square-o",
@@ -9,10 +9,10 @@ const selectionStatus = {
 class Toolbar extends Component {
   state = {
     unreadCount: 0,
-    selectionStatus: selectionStatus.all,
+    selectionStatus: selection.all,
   };
 
-  handleSelectionStatus = () => {};
+  handleSelection = () => {};
 
   render = () => (
     <div className="row toolbar">
@@ -22,10 +22,7 @@ class Toolbar extends Component {
           unread messages
         </p>
 
-        <button
-          className="btn btn-default"
-          onClick={this.handleSelectionStatus}
-        >
+        <button className="btn btn-default" onClick={this.handleSelection}>
           <i className={`fa ${this.state.selectionStatus}`}></i>
         </button>
 

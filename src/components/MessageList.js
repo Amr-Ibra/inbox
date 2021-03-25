@@ -2,16 +2,34 @@ import React, { Component } from "react";
 import Message from "./Message";
 import messages from "../apis/messages";
 
-const selectionStatus = {
-  all: null,
-  some: null,
-  none: null,
+const selection = {
+  all: "fa-check-square-o",
+  some: "fa-minus-square-o",
+  none: "fa-square-o",
 };
 
 class MessageList extends Component {
   state = {
-    selectionStatus: selectionStatus.null,
+    selectionStatus: null,
     messages: messages,
+  };
+
+  componentDidMount() {
+    this.handleSelectionStatus();
+  }
+
+  handleSelectionStatus = () => {
+    const statuses = this.state.messages.map((message) => message.isSelected);
+    const allSelected = statuses.every((status) => status);
+    const noneSelected = statuses.every((status) => !status);
+
+    if (allSelected) {
+      this.setState({ selectionStatus: selection.all });
+    } else if (noneSelected) {
+      this.setState({ selectionStatus: selection.none });
+    } else {
+      this.setState({ selectionStatus: selection.some });
+    }
   };
 
   render = () =>
