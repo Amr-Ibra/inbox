@@ -14,10 +14,15 @@ class App extends Component {
   state = {
     messages: messages,
     selection: null,
+    unreadCount: 0,
+    pluralS: null,
+    disabled: false,
+    defaultLabel: false,
   };
 
   componentDidMount() {
-    this.setOverallSelectionFlag();
+    this.updateOverallSelectionFlag(this.state.messages);
+    this.countUnreadMessages(this.state.messages);
   }
 
   toggleStarring = (id) => {
@@ -32,8 +37,7 @@ class App extends Component {
     const message = messages.find((message) => message.id === id);
     message.selected = !message.selected;
     this.setState({ messages: messages });
-
-    this.setOverallSelectionFlag();
+    this.updateOverallSelectionFlag(messages);
   };
 
   toggleOverallSelection = () => {
@@ -48,20 +52,22 @@ class App extends Component {
       messages.forEach((message) => (message.selected = true));
       this.setState({ messages: messages });
     }
-    this.setOverallSelectionFlag();
+    this.updateOverallSelectionFlag(messages);
   };
 
-  setOverallSelectionFlag() {
-    const statuses = this.state.messages.map((message) => message.selected);
+  updateOverallSelectionFlag(messages) {
+    const statuses = messages.map((message) => message.selected);
     const allSelected = statuses.every((status) => status);
     const allUnselected = statuses.every((status) => !status);
-
     if (allSelected) {
       this.setState({ selection: flag.all });
+      this.setState({ disabled: false });
     } else if (allUnselected) {
       this.setState({ selection: flag.none });
+      this.setState({ disabled: true });
     } else {
       this.setState({ selection: flag.some });
+      this.setState({ disabled: false });
     }
   }
 
@@ -71,6 +77,7 @@ class App extends Component {
       if (message.selected && !message.read) message.read = true;
     });
     this.setState({ messages: messages });
+    this.countUnreadMessages(messages);
   };
 
   markAsUnread = () => {
@@ -79,15 +86,65 @@ class App extends Component {
       if (message.selected && message.read) message.read = false;
     });
     this.setState({ messages: messages });
+    this.countUnreadMessages(messages);
+  };
+
+  deleteMessage = () => {
+    const messages = [...this.state.messages];
+    const retainedMessages = messages.filter((message) => !message.selected);
+    this.setState({ messages: retainedMessages });
+    this.updateOverallSelectionFlag(retainedMessages);
+    this.countUnreadMessages(retainedMessages);
+  };
+
+  countUnreadMessages(messages) {
+    const unreadMessages = messages.filter((message) => !message.read);
+    const unreadCount = unreadMessages.length;
+    this.setState({ unreadCount: unreadCount });
+    if (unreadCount === 1) this.setState({ pluralS: null });
+    else this.setState({ pluralS: "s" });
+  }
+
+  applyLabel = (e) => {
+    const labelToAdd = e.target.value;
+    const messages = [...this.state.messages];
+    messages.forEach((message) => {
+      if (message.selected && !message.labels.includes(labelToAdd))
+        message.labels.push(labelToAdd);
+    });
+    e.target.selectedIndex = 0;
+    this.setState({ messages: messages });
+  };
+
+  removeLabel = (e) => {
+    const labelToRemove = e.target.value;
+    const messages = [...this.state.messages];
+    messages.forEach((message) => {
+      if (message.selected && message.labels.includes(labelToRemove)) {
+        const retainedLabels = message.labels.filter(
+          (label) => label !== labelToRemove
+        );
+        message.labels = retainedLabels;
+      }
+    });
+    e.target.selectedIndex = 0;
+    this.setState({ messages: messages });
   };
 
   render = () => (
     <div>
       <Toolbar
+        unreadCount={this.state.unreadCount}
+        pluralS={this.state.pluralS}
         selection={this.state.selection}
+        disabled={this.state.disabled}
+        defaultLabel={this.state.defaultLabel}
         toggleOverallSelection={this.toggleOverallSelection}
         markAsRead={this.markAsRead}
         markAsUnread={this.markAsUnread}
+        deleteMessage={this.deleteMessage}
+        applyLabel={this.applyLabel}
+        removeLabel={this.removeLabel}
       />
       <MessageList
         messages={this.state.messages}

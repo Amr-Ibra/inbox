@@ -1,38 +1,68 @@
 const Toolbar = ({
   unreadCount,
+  pluralS,
   selection,
+  disabled,
+  defaultLabel,
   toggleOverallSelection,
   markAsRead,
   markAsUnread,
+  deleteMessage,
+  applyLabel,
+  removeLabel,
 }) => (
   <div className="row toolbar">
     <div className="col-md-12">
       <p className="pull-right">
         <span className="badge badge">{unreadCount}</span>
-        unread messages
+        unread message{pluralS}
       </p>
       <button className="btn btn-default" onClick={toggleOverallSelection}>
         <i className={`fa ${selection}`}></i>
       </button>
-      <button className="btn btn-default" onClick={markAsRead}>
+      <button
+        className="btn btn-default"
+        onClick={markAsRead}
+        disabled={disabled}
+      >
         Mark As Read
       </button>
-      <button className="btn btn-default" onClick={markAsUnread}>
+      <button
+        className="btn btn-default"
+        onClick={markAsUnread}
+        disabled={disabled}
+      >
         Mark As Unread
       </button>
-      <select className="form-control label-select">
-        <option>Apply label</option>
+      <select
+        className="form-control label-select"
+        onChange={applyLabel}
+        disabled={disabled}
+      >
+        <option value="" defaultValue={defaultLabel}>
+          Apply label
+        </option>
         <option value="dev">dev</option>
         <option value="personal">personal</option>
         <option value="gschool">gschool</option>
       </select>
-      <select className="form-control label-select">
-        <option>Remove label</option>
+      <select
+        className="form-control label-select"
+        onChange={removeLabel}
+        disabled={disabled}
+      >
+        <option value="" defaultValue={defaultLabel}>
+          Remove label
+        </option>
         <option value="dev">dev</option>
         <option value="personal">personal</option>
         <option value="gschool">gschool</option>
       </select>
-      <button className="btn btn-default">
+      <button
+        className="btn btn-default"
+        onClick={deleteMessage}
+        disabled={disabled}
+      >
         <i className="fa fa-trash-o"></i>
       </button>
     </div>
