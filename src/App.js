@@ -15,9 +15,8 @@ class App extends Component {
     messages: messages,
     selection: null,
     unreadCount: 0,
-    pluralS: null,
+    plural: null,
     disabled: false,
-    defaultLabel: false,
   };
 
   componentDidMount() {
@@ -101,8 +100,8 @@ class App extends Component {
     const unreadMessages = messages.filter((message) => !message.read);
     const unreadCount = unreadMessages.length;
     this.setState({ unreadCount: unreadCount });
-    if (unreadCount === 1) this.setState({ pluralS: null });
-    else this.setState({ pluralS: "s" });
+    if (unreadCount === 1) this.setState({ plural: null });
+    else this.setState({ plural: "s" });
   }
 
   applyLabel = (e) => {
@@ -135,10 +134,9 @@ class App extends Component {
     <div>
       <Toolbar
         unreadCount={this.state.unreadCount}
-        pluralS={this.state.pluralS}
+        plural={this.state.plural}
         selection={this.state.selection}
         disabled={this.state.disabled}
-        defaultLabel={this.state.defaultLabel}
         toggleOverallSelection={this.toggleOverallSelection}
         markAsRead={this.markAsRead}
         markAsUnread={this.markAsUnread}

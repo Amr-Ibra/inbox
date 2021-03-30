@@ -1,9 +1,8 @@
 const Toolbar = ({
   unreadCount,
-  pluralS,
+  plural,
   selection,
   disabled,
-  defaultLabel,
   toggleOverallSelection,
   markAsRead,
   markAsUnread,
@@ -15,7 +14,7 @@ const Toolbar = ({
     <div className="col-md-12">
       <p className="pull-right">
         <span className="badge badge">{unreadCount}</span>
-        unread message{pluralS}
+        unread message{plural}
       </p>
       <button className="btn btn-default" onClick={toggleOverallSelection}>
         <i className={`fa ${selection}`}></i>
@@ -39,9 +38,7 @@ const Toolbar = ({
         onChange={applyLabel}
         disabled={disabled}
       >
-        <option value="" defaultValue={defaultLabel}>
-          Apply label
-        </option>
+        <option value="">Apply label</option>
         <option value="dev">dev</option>
         <option value="personal">personal</option>
         <option value="gschool">gschool</option>
@@ -51,9 +48,7 @@ const Toolbar = ({
         onChange={removeLabel}
         disabled={disabled}
       >
-        <option value="" defaultValue={defaultLabel}>
-          Remove label
-        </option>
+        <option value="">Remove label</option>
         <option value="dev">dev</option>
         <option value="personal">personal</option>
         <option value="gschool">gschool</option>
