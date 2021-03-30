@@ -58,16 +58,10 @@ class App extends Component {
     const statuses = messages.map((message) => message.selected);
     const allSelected = statuses.every((status) => status);
     const allUnselected = statuses.every((status) => !status);
-    if (allSelected) {
-      this.setState({ selection: flag.all });
-      this.setState({ disabled: false });
-    } else if (allUnselected) {
-      this.setState({ selection: flag.none });
-      this.setState({ disabled: true });
-    } else {
-      this.setState({ selection: flag.some });
-      this.setState({ disabled: false });
-    }
+    if (allSelected) this.setState({ selection: flag.all, disabled: false });
+    else if (allUnselected)
+      this.setState({ selection: flag.none, disabled: true });
+    else this.setState({ selection: flag.some, disabled: false });
   }
 
   markAsRead = () => {
