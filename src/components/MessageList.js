@@ -1,11 +1,6 @@
 import Message from "./Message";
 
-const MessageList = ({
-  messages,
-  toggleSelection,
-  toggleStarring,
-  // toggleMessageBody,
-}) =>
+const MessageList = ({ messages, toggleSelection, toggleStarring }) =>
   messages.map((message) => (
     <Message
       key={message.id}
@@ -18,7 +13,6 @@ const MessageList = ({
       labels={message.labels}
       toggleSelection={toggleSelection}
       toggleStarring={toggleStarring}
-      // toggleMessageBody={toggleMessageBody}
     />
   ));
 
