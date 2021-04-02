@@ -3,6 +3,7 @@ const Toolbar = ({
   plural,
   selection,
   disabled,
+  toggleComposeForm,
   toggleOverallSelection,
   markAsRead,
   markAsUnread,
@@ -16,9 +17,15 @@ const Toolbar = ({
         <span className="badge badge">{unreadCount}</span>
         unread message{plural}
       </p>
+
+      <button className="btn btn-danger" onClick={toggleComposeForm}>
+        <i className="fa fa-plus"></i>
+      </button>
+
       <button className="btn btn-default" onClick={toggleOverallSelection}>
         <i className={`fa ${selection}`}></i>
       </button>
+
       <button
         className="btn btn-default"
         onClick={markAsRead}
@@ -26,6 +33,7 @@ const Toolbar = ({
       >
         Mark As Read
       </button>
+
       <button
         className="btn btn-default"
         onClick={markAsUnread}
@@ -33,6 +41,7 @@ const Toolbar = ({
       >
         Mark As Unread
       </button>
+
       <select
         className="form-control label-select"
         onChange={applyLabel}
@@ -43,6 +52,7 @@ const Toolbar = ({
         <option value="personal">personal</option>
         <option value="gschool">gschool</option>
       </select>
+
       <select
         className="form-control label-select"
         onChange={removeLabel}
@@ -53,6 +63,7 @@ const Toolbar = ({
         <option value="personal">personal</option>
         <option value="gschool">gschool</option>
       </select>
+
       <button
         className="btn btn-default"
         onClick={deleteMessage}
