@@ -5,7 +5,7 @@ const messages = [
       "You can't input the protocol without calculating the mobile RSS protocol!",
     read: true,
     starred: false,
-    selected: true,
+    selected: false,
     labels: ["dev", "personal"],
   },
   {
@@ -23,7 +23,7 @@ const messages = [
       "Use the 1080p HTTP feed, then you can parse the cross-platform hard drive!",
     read: true,
     starred: false,
-    selected: true,
+    selected: false,
     labels: ["dev"],
   },
   {
@@ -40,7 +40,7 @@ const messages = [
       "If we override the interface, we can get to the HTTP feed through the virtual EXE interface!",
     read: true,
     starred: false,
-    selected: true,
+    selected: false,
     labels: ["personal"],
   },
   {
@@ -56,7 +56,7 @@ const messages = [
     subject: "We need to index the mobile PCI bus!",
     read: true,
     starred: false,
-    selected: true,
+    selected: false,
     labels: ["dev", "personal"],
   },
   {
