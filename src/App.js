@@ -44,27 +44,58 @@ class App extends Component {
     });
   }
 
-  toggleComposeForm = () => this.setState({ hidden: !this.state.hidden });
+  updateOverallSelectionFlag(messages) {
+    const statuses = messages.map((message) => message.selected);
+    const allSelected = statuses.every((status) => status);
+    const allUnselected = statuses.every((status) => !status);
 
-  onMessageSubmission = (e) => {
-    e.preventDefault();
+    if (allSelected) {
+      this.setState({ selection: flag.all, disabled: false });
+    } else if (allUnselected) {
+      this.setState({ selection: flag.none, disabled: true });
+    } else {
+      this.setState({ selection: flag.some, disabled: false });
+    }
+  }
 
-    const subject = e.target.elements.subject.value;
-    const body = e.target.elements.body.value;
+  countUnreadMessages(messages) {
+    const unreadMessages = messages.filter((message) => !message.read);
+    const unreadCount = unreadMessages.length;
 
-    this.sendMessageToServer(subject, body, e);
-  };
+    this.setState({ unreadCount: unreadCount });
 
-  async sendMessageToServer(subject, body, e) {
+    if (unreadCount === 1) {
+      this.setState({ plural: null });
+    } else {
+      this.setState({ plural: "s" });
+    }
+  }
+
+  getSelectedIds() {
+    const ids = [];
+    this.state.messages.forEach((message) => {
+      if (message.selected) {
+        ids.push(message.id);
+      }
+    });
+    return ids;
+  }
+
+  async fetchApi(request, obj) {
     const response = await fetch(ApiUrl, {
-      method: "POST",
-      body: JSON.stringify({ subject: subject, body: body }),
+      method: request,
+      body: JSON.stringify(obj),
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
     });
-    const newMessage = await response.json();
+    const promise = await response.json();
+    return promise;
+  }
+
+  async postMessageToServer(obj) {
+    const newMessage = await this.fetchApi("POST", obj);
 
     /* Add the "selected" key */
     newMessage["selected"] = false;
@@ -74,34 +105,36 @@ class App extends Component {
 
     this.updateOverallSelectionFlag(messages);
     this.countUnreadMessages(messages);
-
-    this.toggleComposeForm();
-
-    e.target.elements.subject.value = null;
-    e.target.elements.body.value = null;
   }
 
-  toggleStarring = (id) => {
-    const message = this.state.messages.find((message) => message.id === id);
-    this.updateStarringOnServer(id, !message.starred);
-  };
-
-  async updateStarringOnServer(id, bool) {
-    const response = await fetch(ApiUrl, {
-      method: "PATCH",
-      body: JSON.stringify({ messageIds: [id], command: "star", star: bool }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
-    const messages = await response.json();
+  async patchMessagesOnServer(obj) {
+    const messages = await this.fetchApi("PATCH", obj);
 
     this.addSelectedKey(messages);
 
     this.setState({ messages: messages });
+
     this.updateOverallSelectionFlag(messages);
+    this.countUnreadMessages(messages);
   }
+
+  toggleComposeForm = () => this.setState({ hidden: !this.state.hidden });
+
+  sendMessage = (e) => {
+    e.preventDefault();
+
+    const subject = e.target.elements.subject.value;
+    const body = e.target.elements.body.value;
+    const obj = { subject: subject, body: body };
+
+    this.postMessageToServer(obj);
+
+    this.toggleComposeForm();
+
+    /* Clear the subject and body fields */
+    e.target.elements.subject.value = null;
+    e.target.elements.body.value = null;
+  };
 
   toggleSelection = (id) => {
     const messages = [...this.state.messages];
@@ -118,10 +151,7 @@ class App extends Component {
     if (this.state.selection === flag.all) {
       messages.forEach((message) => (message.selected = false));
       this.setState({ messages: messages });
-    } else if (
-      this.state.selection === flag.none ||
-      this.state.selection === flag.some
-    ) {
+    } else {
       messages.forEach((message) => (message.selected = true));
       this.setState({ messages: messages });
     }
@@ -129,145 +159,49 @@ class App extends Component {
     this.updateOverallSelectionFlag(messages);
   };
 
-  updateOverallSelectionFlag(messages) {
-    const statuses = messages.map((message) => message.selected);
-    const allSelected = statuses.every((status) => status);
-    const allUnselected = statuses.every((status) => !status);
-
-    if (allSelected) {
-      this.setState({ selection: flag.all, disabled: false });
-    } else if (allUnselected) {
-      this.setState({ selection: flag.none, disabled: true });
-    } else {
-      this.setState({ selection: flag.some, disabled: false });
-    }
-  }
+  toggleStarring = (id) => {
+    const message = this.state.messages.find((message) => message.id === id);
+    const obj = { messageIds: [id], command: "star", star: !message.starred };
+    this.patchMessagesOnServer(obj);
+  };
 
   markAsRead = () => {
-    const ids = [];
-    this.state.messages.forEach((message) => {
-      if (message.selected && !message.read) {
-        ids.push(message.id);
-      }
-    });
-    this.updateReadBoolOnServer(ids, true);
+    const ids = this.getSelectedIds();
+    const obj = { messageIds: ids, command: "read", read: true };
+    this.patchMessagesOnServer(obj);
   };
 
   markAsUnread = () => {
-    const ids = [];
-    this.state.messages.forEach((message) => {
-      if (message.selected && message.read) {
-        ids.push(message.id);
-      }
-    });
-    this.updateReadBoolOnServer(ids, false);
+    const ids = this.getSelectedIds();
+    const obj = { messageIds: ids, command: "read", read: false };
+    this.patchMessagesOnServer(obj);
   };
-
-  async updateReadBoolOnServer(ids, bool) {
-    const response = await fetch(ApiUrl, {
-      method: "PATCH",
-      body: JSON.stringify({ messageIds: ids, command: "read", read: bool }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
-    const messages = await response.json();
-
-    this.addSelectedKey(messages);
-
-    this.setState({ messages: messages });
-
-    this.updateOverallSelectionFlag(messages);
-    this.countUnreadMessages(messages);
-  }
-
-  deleteMessage = () => {
-    const ids = [];
-    this.state.messages.forEach((message) => {
-      if (message.selected) {
-        ids.push(message.id);
-      }
-    });
-    this.deleteMessageOnServer(ids);
-  };
-
-  async deleteMessageOnServer(ids) {
-    const response = await fetch(ApiUrl, {
-      method: "PATCH",
-      body: JSON.stringify({ messageIds: ids, command: "delete" }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
-    const messages = await response.json();
-
-    this.addSelectedKey(messages);
-
-    this.setState({ messages: messages });
-
-    this.updateOverallSelectionFlag(messages);
-    this.countUnreadMessages(messages);
-  }
-
-  countUnreadMessages(messages) {
-    const unreadMessages = messages.filter((message) => !message.read);
-    const unreadCount = unreadMessages.length;
-
-    this.setState({ unreadCount: unreadCount });
-
-    if (unreadCount === 1) {
-      this.setState({ plural: null });
-    } else {
-      this.setState({ plural: "s" });
-    }
-  }
 
   applyLabel = (e) => {
     const label = e.target.value;
-    const ids = [];
+    const ids = this.getSelectedIds();
 
-    this.state.messages.forEach((message) => {
-      if (message.selected && !message.labels.includes(label)) {
-        ids.push(message.id);
-      }
-    });
-    this.updateLabelOnServer(ids, "addLabel", label);
+    const obj = { messageIds: ids, command: "addLabel", label: label };
+    this.patchMessagesOnServer(obj);
 
     e.target.selectedIndex = 0;
   };
 
   removeLabel = (e) => {
     const label = e.target.value;
-    const ids = [];
+    const ids = this.getSelectedIds();
 
-    this.state.messages.forEach((message) => {
-      if (message.selected && message.labels.includes(label)) {
-        ids.push(message.id);
-      }
-    });
-    this.updateLabelOnServer(ids, "removeLabel", label);
+    const obj = { messageIds: ids, command: "removeLabel", label: label };
+    this.patchMessagesOnServer(obj);
 
     e.target.selectedIndex = 0;
   };
 
-  async updateLabelOnServer(ids, command, label) {
-    const response = await fetch(ApiUrl, {
-      method: "PATCH",
-      body: JSON.stringify({ messageIds: ids, command: command, label: label }),
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
-    const messages = await response.json();
-
-    this.addSelectedKey(messages);
-
-    this.setState({ messages: messages });
-    this.updateOverallSelectionFlag(messages);
-  }
+  deleteMessage = () => {
+    const ids = this.getSelectedIds();
+    const obj = { messageIds: ids, command: "delete" };
+    this.patchMessagesOnServer(obj);
+  };
 
   render = () => (
     <div>
@@ -284,10 +218,7 @@ class App extends Component {
         applyLabel={this.applyLabel}
         removeLabel={this.removeLabel}
       />
-      <Compose
-        hidden={this.state.hidden}
-        onMessageSubmission={this.onMessageSubmission}
-      />
+      <Compose hidden={this.state.hidden} sendMessage={this.sendMessage} />
       <MessageList
         messages={this.state.messages}
         toggleSelection={this.toggleSelection}
